@@ -50,6 +50,25 @@ def paints():
 
     return jsonAllPaints
 
+@app.route('/step', methods = ['POST'])
+def step():
+    schemeId = request.json['schemeId']
+    areaName = request.json['areaName']
+    paint = request.json['paint']
+    type = request.json['type']
+    method = request.json['method']
+
+    query = {'_id': ObjectId(schemeId)}
+    update = {'$push': {'areas.$[n].steps': {'method': method, 'paint': paint}}}
+    filter = [{'n.name': areaName}]
+
+    schemes.update_one(query, update, array_filters=filter)
+
+    foundScheme = schemes.find_one(ObjectId(schemeId))
+    jsonScheme = dumps(foundScheme)
+
+    return jsonScheme
+
 
 
 
